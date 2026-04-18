@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-canvas text-ink font-sans antialiased;
+  font-feature-settings: "cv11", "ss01";
+}
+
+/* Subtle scrollbars */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-line rounded-pill;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-line-soft;
+}
+
+/* Focus visible ring baseline */
+:where(button, a, [role="button"], [tabindex]):focus-visible {
+  outline: none;
+  @apply ring-2 ring-green-500/40 ring-offset-2 ring-offset-canvas rounded-md;
+}
+
+/* Fade-in for poppers */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
