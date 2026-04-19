@@ -1,4 +1,4 @@
-import { ChevronLeft, MapPin } from "lucide-react";
+import { ChevronLeft, MapPin, Pencil, Share2 } from "lucide-react";
 import { Icon } from "../ui/Icon";
 import { Tag } from "../ui/Tag";
 import type { Profile } from "../../types/profile";
@@ -25,9 +25,13 @@ const toneClasses: Record<"green" | "purple" | "sand", string> = {
 export function ProfileBanner({
   profile,
   onBack,
+  isSelf = false,
+  onEdit,
 }: {
   profile: Profile;
   onBack?: () => void;
+  isSelf?: boolean;
+  onEdit?: () => void;
 }) {
   return (
     <section className="overflow-hidden rounded-[20px] border border-line bg-white">
@@ -40,7 +44,7 @@ export function ProfileBanner({
             className="absolute left-20 top-15 inline-flex h-[32px] items-center gap-5 rounded-pill bg-white/90 px-15 text-xs font-semibold text-ink shadow-soft backdrop-blur transition-colors hover:bg-white"
           >
             <ChevronLeft className="h-4 w-4" />
-            Back to feed
+            {isSelf ? "Back" : "Back to feed"}
           </button>
         )}
       </div>
@@ -68,20 +72,44 @@ export function ProfileBanner({
           </div>
 
           <div className="flex shrink-0 items-center gap-10">
-            <button className="inline-flex h-[44px] items-center gap-10 rounded-pill border border-line-soft bg-white px-20 text-sm font-medium text-ink transition-colors hover:bg-canvas">
-              <Icon name="bubbleChat" size={18} />
-              Message
-            </button>
-            <button className="inline-flex h-[44px] items-center gap-10 rounded-pill bg-ink px-20 text-sm font-medium text-white transition-colors hover:bg-black/85">
-              <Icon name="userAdd" size={18} />
-              Follow
-            </button>
-            <button
-              aria-label="More options"
-              className="inline-flex h-[44px] w-[44px] items-center justify-center rounded-pill border border-line-soft bg-white text-muted transition-colors hover:bg-canvas"
-            >
-              <Icon name="moreVertical" size={18} />
-            </button>
+            {isSelf ? (
+              <>
+                <button className="inline-flex h-[44px] items-center gap-10 rounded-pill border border-line-soft bg-white px-20 text-sm font-medium text-ink transition-colors hover:bg-canvas">
+                  <Share2 className="h-[18px] w-[18px]" strokeWidth={1.8} />
+                  Share profile
+                </button>
+                <button
+                  onClick={onEdit}
+                  className="inline-flex h-[44px] items-center gap-10 rounded-pill bg-ink px-20 text-sm font-medium text-white transition-colors hover:bg-black/85"
+                >
+                  <Pencil className="h-[18px] w-[18px]" strokeWidth={1.8} />
+                  Edit profile
+                </button>
+                <button
+                  aria-label="More options"
+                  className="inline-flex h-[44px] w-[44px] items-center justify-center rounded-pill border border-line-soft bg-white text-muted transition-colors hover:bg-canvas"
+                >
+                  <Icon name="moreVertical" size={18} />
+                </button>
+              </>
+            ) : (
+              <>
+                <button className="inline-flex h-[44px] items-center gap-10 rounded-pill border border-line-soft bg-white px-20 text-sm font-medium text-ink transition-colors hover:bg-canvas">
+                  <Icon name="bubbleChat" size={18} />
+                  Message
+                </button>
+                <button className="inline-flex h-[44px] items-center gap-10 rounded-pill bg-ink px-20 text-sm font-medium text-white transition-colors hover:bg-black/85">
+                  <Icon name="userAdd" size={18} />
+                  Follow
+                </button>
+                <button
+                  aria-label="More options"
+                  className="inline-flex h-[44px] w-[44px] items-center justify-center rounded-pill border border-line-soft bg-white text-muted transition-colors hover:bg-canvas"
+                >
+                  <Icon name="moreVertical" size={18} />
+                </button>
+              </>
+            )}
           </div>
         </div>
 

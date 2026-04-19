@@ -1,8 +1,85 @@
 import { Profile } from "../types/profile";
-import { posts } from "./mock";
+import { postsByAuthor } from "./mock";
 import { teacherAvatars, schoolLogos } from "./images";
 
 export const profiles: Record<string, Profile> = {
+  "sarah-iyer": {
+    id: "sarah-iyer",
+    name: "Sarah Iyer",
+    role: "Biology Teacher",
+    school: "Delhi Public School",
+    avatar: "https://i.pravatar.cc/300?img=48",
+    bio: "Biology teacher passionate about turning textbook concepts into lived experiences — from cell respiration labs to weekend field trips. I believe in student-led inquiry, collaborative research, and making every learner feel seen. Outside of class, I coach the Science Olympiad team, write curriculum for rural partner schools, and tinker with edtech side projects that reduce grading load so teachers can focus on teaching.",
+    location: "New Delhi, India",
+    joined: "Joined August 2021",
+    tone: "purple",
+    tags: ["AP Biology", "Grade 10", "Science Olympiad", "Curriculum Design", "Student Mentor"],
+    stats: {
+      posts: 64,
+      followers: 1280,
+      following: 312,
+      classes: 5,
+    },
+    highlights: [
+      { label: "Classes Taught", value: "5", tone: "green" },
+      { label: "Mentees", value: "84", tone: "purple" },
+      { label: "Workshops Led", value: "17", tone: "sand" },
+    ],
+    personalInfo: {
+      email: "sarah.iyer@dps.edu.in",
+      phone: "+91 98450 22117",
+      location: "New Delhi, India",
+      birthday: "July 9, 1991",
+      languages: ["English", "Hindi", "Tamil"],
+      website: "sarahiyer.teach",
+    },
+    experience: [
+      {
+        role: "Biology Teacher",
+        organization: "Delhi Public School",
+        employmentType: "Full Time",
+        period: "Aug 2021 — Present",
+        description:
+          "Teach AP Biology and Grade 10 General Biology. Lead the Science Olympiad coaching program and co-run a weekend lab-skills bootcamp for juniors.",
+        tone: "green",
+        current: true,
+        logo: schoolLogos.dps,
+      },
+      {
+        role: "Assistant Biology Teacher",
+        organization: "Greenfield International School",
+        employmentType: "Full Time",
+        period: "Jul 2017 — Jul 2021",
+        description:
+          "Designed the inquiry-based cell biology unit now used across the middle-school track. Mentored 3 regional science symposium finalists.",
+        tone: "purple",
+        logo: schoolLogos.greenfield,
+      },
+    ],
+    education: [
+      {
+        degree: "M.Sc. in Biology Education",
+        institution: "University of Delhi",
+        period: "2015 — 2017",
+        description:
+          "Focused on pedagogy for secondary-school biology, with a dissertation on student-led inquiry in cell biology units.",
+        grade: "8.9 / 10 GPA",
+        tone: "purple",
+        logo: schoolLogos.delhiUniversity,
+      },
+      {
+        degree: "B.Sc. in Biology (Honours)",
+        institution: "Miranda House, University of Delhi",
+        period: "2012 — 2015",
+        description:
+          "Biology with a minor in environmental science. Led the college science club and co-founded the peer-tutoring program.",
+        grade: "First Class",
+        tone: "sand",
+        logo: schoolLogos.delhiUniversity,
+      },
+    ],
+    posts: postsByAuthor("sarah-iyer"),
+  },
   "dr-priya-sharma": {
     id: "dr-priya-sharma",
     name: "Dr. Priya Sharma",
@@ -97,7 +174,7 @@ export const profiles: Record<string, Profile> = {
         logo: schoolLogos.delhiUniversity,
       },
     ],
-    posts,
+    posts: postsByAuthor("dr-priya-sharma"),
   },
 };
 

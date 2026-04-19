@@ -70,24 +70,31 @@ export function SkillsOverflow({ skills }: { skills: string[] }) {
     return () => ro.disconnect();
   }, [recompute]);
 
-  // Close tooltip on outside click / Escape
+  // Close tooltip on Escape (hover logic handles open/close for pointer users;
+  // keyboard users rely on focus/blur + Escape).
   useEffect(() => {
     if (!tooltipOpen) return;
-    const onClick = (e: MouseEvent) => {
-      if (!tooltipWrapRef.current?.contains(e.target as Node)) {
-        setTooltipOpen(false);
-      }
-    };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setTooltipOpen(false);
     };
-    document.addEventListener("mousedown", onClick);
     document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("mousedown", onClick);
-      document.removeEventListener("keydown", onKey);
-    };
+    return () => document.removeEventListener("keydown", onKey);
   }, [tooltipOpen]);
+
+  // Small delay when the pointer leaves so moving from the +N chip to the
+  // tooltip content doesn't cause a flicker.
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cancelClose = () => {
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+  };
+  const scheduleClose = () => {
+    cancelClose();
+    closeTimer.current = setTimeout(() => setTooltipOpen(false), 120);
+  };
+  useEffect(() => () => cancelClose(), []);
 
   const visible = skills.slice(0, fitCount);
   const hidden = skills.slice(fitCount);
@@ -119,18 +126,31 @@ export function SkillsOverflow({ skills }: { skills: string[] }) {
           </span>
         ))}
         {hasOverflow && (
-          <div ref={tooltipWrapRef} className="relative">
+          <div
+            ref={tooltipWrapRef}
+            className="relative"
+            onMouseEnter={() => {
+              cancelClose();
+              setTooltipOpen(true);
+            }}
+            onMouseLeave={scheduleClose}
+          >
             <button
               type="button"
               aria-label={`${hidden.length} more skills`}
-              aria-expanded={tooltipOpen}
-              onClick={() => setTooltipOpen((v) => !v)}
+              aria-describedby={tooltipOpen ? "skills-overflow-tooltip" : undefined}
+              onFocus={() => {
+                cancelClose();
+                setTooltipOpen(true);
+              }}
+              onBlur={scheduleClose}
               className={`${chipClass} cursor-pointer transition-colors hover:bg-line`}
             >
               +{hidden.length}
             </button>
             {tooltipOpen && (
               <div
+                id="skills-overflow-tooltip"
                 role="tooltip"
                 className="absolute left-0 top-[calc(100%+8px)] z-50 min-w-[180px] animate-[fadeIn_120ms_ease-out] rounded-md border border-line bg-white p-15 shadow-[0_12px_32px_-8px_rgba(16,24,40,0.16),0_2px_8px_rgba(16,24,40,0.06)]"
               >

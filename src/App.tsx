@@ -9,15 +9,22 @@ import { NotificationsPage } from "./pages/NotificationsPage";
 import { MessagesPage } from "./pages/MessagesPage";
 import { sessions, posts } from "./data/mock";
 import { getProfile } from "./data/profiles";
+import type { Profile } from "./types/profile";
 
 type View =
   | { name: "feed" }
   | { name: "profile"; id: string }
+  | { name: "self" }
   | { name: "notifications" }
   | { name: "messages" };
 
+const SELF_PROFILE_ID = "sarah-iyer";
+
 export default function App() {
   const [view, setView] = useState<View>({ name: "feed" });
+  const [selfProfile, setSelfProfile] = useState<Profile | undefined>(() =>
+    getProfile(SELF_PROFILE_ID)
+  );
 
   const openProfile = (id: string) => {
     setView({ name: "profile", id });
@@ -35,12 +42,18 @@ export default function App() {
     setView({ name: "messages" });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+  const openSelfProfile = () => {
+    setView({ name: "self" });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <PageLayout
       hideSidebars={view.name === "notifications" || view.name === "messages"}
+      hideMenu={view.name === "notifications" || view.name === "messages"}
       onOpenNotifications={openNotifications}
       onOpenMessages={openMessages}
+      onOpenSelfProfile={openSelfProfile}
       onNavigateHome={backToFeed}
     >
       {view.name === "feed" ? (
@@ -72,6 +85,21 @@ export default function App() {
         <NotificationsPage onBack={backToFeed} />
       ) : view.name === "messages" ? (
         <MessagesPage onBack={backToFeed} />
+      ) : view.name === "self" ? (
+        !selfProfile ? (
+          <div className="rounded-[20px] border border-line bg-white p-30 text-center">
+            <p className="text-base text-muted">Your profile is unavailable.</p>
+          </div>
+        ) : (
+          <ProfilePage
+            profile={selfProfile}
+            onBack={backToFeed}
+            isSelf
+            onUpdate={(patch) =>
+              setSelfProfile((p) => (p ? { ...p, ...patch } : p))
+            }
+          />
+        )
       ) : (
         (() => {
           const profile = getProfile(view.id);

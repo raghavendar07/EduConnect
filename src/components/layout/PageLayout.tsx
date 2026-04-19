@@ -6,14 +6,18 @@ import { RightSidebar } from "./RightSidebar";
 export function PageLayout({
   children,
   hideSidebars = false,
+  hideMenu = false,
   onOpenNotifications,
   onOpenMessages,
+  onOpenSelfProfile,
   onNavigateHome,
 }: {
   children: ReactNode;
   hideSidebars?: boolean;
+  hideMenu?: boolean;
   onOpenNotifications?: () => void;
   onOpenMessages?: () => void;
+  onOpenSelfProfile?: () => void;
   onNavigateHome?: () => void;
 }) {
   return (
@@ -21,7 +25,9 @@ export function PageLayout({
       <Navbar
         onOpenNotifications={onOpenNotifications}
         onOpenMessages={onOpenMessages}
+        onOpenSelfProfile={onOpenSelfProfile}
         onNavigateHome={onNavigateHome}
+        hideMenu={hideMenu}
       />
       <div className="flex w-full">
         {!hideSidebars && <LeftSidebar />}

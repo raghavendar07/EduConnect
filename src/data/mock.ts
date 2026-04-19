@@ -2,6 +2,15 @@ import { Session } from "../components/cards/SessionCard";
 import { Post } from "../components/cards/PostCard";
 import { teacherAvatars, feedImages } from "./images";
 
+const sarahAuthor = {
+  id: "sarah-iyer",
+  name: "Sarah Iyer",
+  role: "Biology Teacher",
+  school: "Delhi Public School",
+  tone: "purple" as const,
+  avatar: "https://i.pravatar.cc/300?img=48",
+};
+
 export const sessions: Session[] = [
   {
     type: "1:1 Session",
@@ -173,4 +182,35 @@ export const posts: Post[] = [
     images: [feedImages.teacherClassroom],
     stats: { likes: 96, comments: 41 },
   },
+  {
+    author: sarahAuthor,
+    title: "AP Biology Lab Refresh — Moving from Recipe to Inquiry",
+    excerpt:
+      "Rewrote the Grade 10 cell respiration lab over the break. Instead of the step-by-step recipe, students now get the question, the constraints, and the raw materials — they design the procedure in pairs before we converge on a shared protocol. First run went better than I hoped: four groups independently arrived at a control condition I didn't prompt, and two asked to extend the run over lunch. Writing up the notes for anyone who wants to borrow the structure.",
+    time: "Today, 10 AM",
+    images: [feedImages.girlsClassroom],
+    stats: { likes: 38, comments: 14 },
+  },
+  {
+    author: sarahAuthor,
+    title: "Science Olympiad Coaching — Week 3 Recap",
+    excerpt:
+      "Three weeks into the Olympiad cycle and the team is finding its rhythm. We closed the gap on cell structure and are moving into respiration next week. A parent asked how they can support at home without doing the work for the student — the short answer is: ask them to teach you. If they can explain glycolysis to a non-biologist, they understand it.",
+    time: "Yesterday",
+    stats: { likes: 52, comments: 9 },
+  },
+  {
+    author: sarahAuthor,
+    title: "Weekend Field Trip — Riverside Ecology Walk",
+    excerpt:
+      "Thirty students, two parent volunteers, six notebooks of observations, and one surprise bird sighting. Sharing a few photos from yesterday's walk along the river — the kind of afternoon that's hard to replicate inside a classroom.",
+    time: "2 days ago",
+    images: [feedImages.handsRaised, feedImages.studentsAtDesks],
+    stats: { likes: 74, comments: 18 },
+  },
 ];
+
+/** Posts authored by a given profile id. */
+export function postsByAuthor(authorId: string): Post[] {
+  return posts.filter((p) => p.author.id === authorId);
+}

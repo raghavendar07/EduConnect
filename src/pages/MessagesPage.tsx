@@ -203,28 +203,11 @@ function ThreadHeader({ conversation }: { conversation: Conversation }) {
             {conversation.name}
           </p>
           <span className="inline-flex items-center gap-5 text-xs font-medium text-subtle">
-            <VerifiedBadge />
             {conversation.role}
           </span>
         </div>
       </div>
     </div>
-  );
-}
-
-function VerifiedBadge() {
-  return (
-    <span className="inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center rounded-pill bg-purple-700 text-white">
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="3"
-        className="h-[10px] w-[10px]"
-      >
-        <polyline points="20 6 9 17 4 12" />
-      </svg>
-    </span>
   );
 }
 

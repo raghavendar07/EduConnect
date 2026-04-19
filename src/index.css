@@ -46,3 +46,26 @@ body {
     transform: translateY(0);
   }
 }
+
+/* Slide-in from the right for side panels */
+@keyframes slideInRight {
+  from {
+    transform: translateX(16px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Circular progress ring fill — the CSS variable `--ring-circumference` is
+   set inline on the element (e.g. style={{ ['--ring-circumference']: 251.3 }}). */
+@keyframes ringFill {
+  from {
+    stroke-dashoffset: var(--ring-circumference);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
