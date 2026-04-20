@@ -8,6 +8,7 @@ import {
   Send,
 } from "lucide-react";
 import { Avatar } from "../ui/Avatar";
+import { PostComments } from "./PostComments";
 
 export type Post = {
   author: {
@@ -181,6 +182,8 @@ export function PostCard({
           </button>
         </div>
       </footer>
+
+      <PostComments totalComments={post.stats.comments} />
     </article>
   );
 }

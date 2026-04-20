@@ -257,14 +257,14 @@ export function EditProfileModal({
                         onClick={() => setActive(s.key)}
                         className={`relative flex w-full items-center px-20 py-15 text-left text-[15px] transition-colors ${
                           isActive
-                            ? "font-semibold text-[#2563eb]"
+                            ? "font-semibold text-green-700"
                             : "font-medium text-subtle hover:text-ink"
                         } ${i < SECTIONS.length - 1 ? "border-b border-line" : ""}`}
                       >
                         {isActive && (
                           <span
                             aria-hidden
-                            className="absolute left-0 top-0 h-full w-[3px] bg-[#2563eb]"
+                            className="absolute left-0 top-0 h-full w-[3px] bg-green-700"
                           />
                         )}
                         {s.label}
@@ -419,7 +419,7 @@ function BasicSection(props: {
               </span>
             )}
           </div>
-          <label className="inline-flex cursor-pointer items-center gap-[6px] text-sm font-semibold text-[#2563eb] transition-colors hover:text-[#1d4ed8]">
+          <label className="inline-flex cursor-pointer items-center gap-[6px] text-sm font-semibold text-green-700 transition-colors hover:text-green-600">
             <UploadCloud className="h-[16px] w-[16px]" strokeWidth={2} />
             Replace
             <input type="file" accept="image/*" onChange={handleFile} className="hidden" />
@@ -890,7 +890,7 @@ function Input({
       onChange={(e) => onChange(e.target.value)}
       onKeyDown={onKeyDown}
       placeholder={placeholder}
-      className="h-[44px] w-full rounded-md border border-line bg-white px-15 text-[15px] font-medium text-ink placeholder:font-normal placeholder:text-subtle focus:border-[#2563eb] focus:outline-none"
+      className="h-[44px] w-full rounded-md border border-line bg-white px-15 text-[15px] font-medium text-ink placeholder:font-normal placeholder:text-subtle focus:border-green-700 focus:outline-none"
     />
   );
 }
@@ -912,7 +912,7 @@ function TextArea({
       onChange={(e) => onChange(e.target.value)}
       rows={rows}
       placeholder={placeholder}
-      className="w-full resize-y rounded-md border border-line bg-white px-15 py-[10px] text-[15px] leading-[1.55] text-ink placeholder:text-subtle focus:border-[#2563eb] focus:outline-none"
+      className="w-full resize-y rounded-md border border-line bg-white px-15 py-[10px] text-[15px] leading-[1.55] text-ink placeholder:text-subtle focus:border-green-700 focus:outline-none"
     />
   );
 }
@@ -933,7 +933,7 @@ function Select({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="h-[44px] w-full appearance-none rounded-md border border-line bg-white px-15 pr-[44px] text-[15px] font-medium text-ink focus:border-[#2563eb] focus:outline-none"
+        className="h-[44px] w-full appearance-none rounded-md border border-line bg-white px-15 pr-[44px] text-[15px] font-medium text-ink focus:border-green-700 focus:outline-none"
       >
         {placeholder && <option value="">{placeholder}</option>}
         {options.map((o) => (

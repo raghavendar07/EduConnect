@@ -24,6 +24,7 @@ import {
 } from "../components/profile/EditProfileModal";
 import { Tabs } from "../components/sections/Tabs";
 import { PostCard, type Post } from "../components/cards/PostCard";
+import { PostComments } from "../components/cards/PostComments";
 import { Icon } from "../components/ui/Icon";
 import { Tag } from "../components/ui/Tag";
 import type { Profile } from "../types/profile";
@@ -1038,6 +1039,8 @@ function V3FeedCard({ post, isSelf }: { post: Post; isSelf?: boolean }) {
           </button>
         </div>
       </footer>
+
+      <PostComments totalComments={post.stats.comments} />
     </article>
   );
 }
