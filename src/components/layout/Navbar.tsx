@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, LogOut, Settings, UserPen } from "lucide-react";
 import { Avatar } from "../ui/Avatar";
 import { Icon } from "../ui/Icon";
 import { NotificationPanel } from "./NotificationPanel";
-import { ProfilePanel } from "./ProfilePanel";
 
 export function Navbar({
   onOpenNotifications,
@@ -22,6 +21,24 @@ export function Navbar({
   const [bannerOpen, setBannerOpen] = useState(true);
   const [notifHover, setNotifHover] = useState(false);
   const notifCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  // Close the profile dropdown when clicking outside or pressing Escape.
+  useEffect(() => {
+    if (!profileOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (!profileRef.current?.contains(e.target as Node)) setProfileOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setProfileOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [profileOpen]);
 
   const openNotifPreview = () => {
     if (notifCloseTimer.current) {
@@ -35,6 +52,16 @@ export function Navbar({
     notifCloseTimer.current = setTimeout(() => setNotifHover(false), 150);
   };
 
+  // Expose the current navbar height as a CSS variable so descendant sticky
+  // elements (e.g. tab strips inside pages) can pin just below the navbar and
+  // stay in sync when the announcement banner is dismissed.
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty("--nav-h", bannerOpen ? "110px" : "70px");
+    return () => {
+      root.style.removeProperty("--nav-h");
+    };
+  }, [bannerOpen]);
 
   return (
     <div className="sticky top-0 z-40">
@@ -142,44 +169,128 @@ export function Navbar({
               )}
             </div>
 
-            {/* Profile trigger — opens side panel */}
-            <button
-              type="button"
-              aria-expanded={profileOpen}
-              aria-label="Open profile panel"
-              onClick={() => setProfileOpen(true)}
-              className={`flex items-center gap-10 rounded-pill p-[4px] pr-10 transition-colors ${
-                profileOpen ? "bg-canvas" : "hover:bg-canvas"
-              }`}
-            >
-              <Avatar
-                name="Sarah Iyer"
-                src="https://i.pravatar.cc/300?img=48"
-                size="sm"
-                tone="sand"
-              />
-              <div className="hidden flex-col items-start gap-[2px] leading-none md:flex">
-                <span className="inline-flex items-center gap-[4px] text-sm font-semibold text-ink">
-                  Sarah Iyer
-                  <ChevronDown
-                    className="h-[14px] w-[14px] text-subtle"
-                    strokeWidth={2}
-                  />
-                </span>
-                <span className="text-xs font-medium text-subtle">
-                  Biology Teacher · DPS
-                </span>
-              </div>
-            </button>
+            {/* Profile dropdown */}
+            <div ref={profileRef} className="relative">
+              <button
+                type="button"
+                aria-expanded={profileOpen}
+                aria-haspopup="menu"
+                onClick={() => setProfileOpen((v) => !v)}
+                className={`flex items-center gap-10 rounded-pill p-[4px] pr-10 transition-colors ${
+                  profileOpen ? "bg-canvas" : "hover:bg-canvas"
+                }`}
+              >
+                <Avatar
+                  name="Sarah Iyer"
+                  src="https://i.pravatar.cc/300?img=48"
+                  size="sm"
+                  tone="sand"
+                />
+                <div className="hidden flex-col items-start gap-[2px] leading-none md:flex">
+                  <span className="inline-flex items-center gap-[4px] text-sm font-semibold text-ink">
+                    Sarah Iyer
+                    <ChevronDown
+                      className={`h-[14px] w-[14px] text-subtle transition-transform ${
+                        profileOpen ? "rotate-180" : ""
+                      }`}
+                      strokeWidth={2}
+                    />
+                  </span>
+                  <span className="text-xs font-medium text-subtle">
+                    Biology Teacher · DPS
+                  </span>
+                </div>
+              </button>
+
+              {profileOpen && (
+                <div
+                  role="menu"
+                  className="absolute right-0 top-[calc(100%+12px)] z-50 w-[260px] animate-[fadeIn_120ms_ease-out] rounded-[16px] bg-white p-[8px] shadow-[0_24px_48px_-12px_rgba(16,24,40,0.18),0_4px_12px_rgba(16,24,40,0.06)] ring-1 ring-line"
+                >
+                  {/* Identity — click to open self profile */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setProfileOpen(false);
+                      onOpenSelfProfile?.();
+                    }}
+                    className="flex w-full items-center gap-10 rounded-md p-10 text-left transition-colors hover:bg-canvas"
+                  >
+                    <Avatar
+                      name="Sarah Iyer"
+                      src="https://i.pravatar.cc/300?img=48"
+                      size="md"
+                      tone="sand"
+                    />
+                    <div className="flex flex-col gap-[2px] leading-none">
+                      <span className="text-sm font-semibold text-ink">
+                        Sarah Iyer
+                      </span>
+                      <span className="text-xs font-medium text-subtle">
+                        View profile
+                      </span>
+                    </div>
+                  </button>
+
+                  <div className="my-[4px] h-px bg-line" />
+
+                  <MenuItem
+                    icon={<UserPen className="h-[16px] w-[16px]" strokeWidth={1.8} />}
+                    onClick={() => {
+                      setProfileOpen(false);
+                      onOpenSelfProfile?.();
+                    }}
+                  >
+                    Edit Profile
+                  </MenuItem>
+                  <MenuItem icon={<Settings className="h-[16px] w-[16px]" strokeWidth={1.8} />}>
+                    Settings
+                  </MenuItem>
+
+                  <div className="my-[4px] h-px bg-line" />
+
+                  <MenuItem
+                    icon={<LogOut className="h-[16px] w-[16px]" strokeWidth={1.8} />}
+                    tone="danger"
+                  >
+                    Log out
+                  </MenuItem>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
-
-      <ProfilePanel
-        open={profileOpen}
-        onClose={() => setProfileOpen(false)}
-        onViewProfile={() => onOpenSelfProfile?.()}
-      />
     </div>
+  );
+}
+
+function MenuItem({
+  icon,
+  children,
+  tone = "default",
+  onClick,
+}: {
+  icon: React.ReactNode;
+  children: React.ReactNode;
+  tone?: "default" | "danger";
+  onClick?: () => void;
+}) {
+  const colors =
+    tone === "danger"
+      ? "text-[#c0392b] hover:bg-[#fdecea]"
+      : "text-ink hover:bg-canvas";
+  return (
+    <button
+      type="button"
+      role="menuitem"
+      onClick={onClick}
+      className={`flex w-full items-center gap-10 rounded-sm px-10 py-[8px] text-sm font-medium transition-colors ${colors}`}
+    >
+      <span className="inline-flex h-[20px] w-[20px] items-center justify-center">
+        {icon}
+      </span>
+      {children}
+    </button>
   );
 }

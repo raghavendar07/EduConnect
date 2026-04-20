@@ -1,8 +1,9 @@
+import { useState } from "react";
 import { ChevronRight, FileText } from "lucide-react";
 import { Avatar } from "../ui/Avatar";
 import { Eyebrow } from "../ui/SectionHeader";
 import { Icon } from "../ui/Icon";
-import { teacherAvatars } from "../../data/images";
+import { teacherAvatars, studentAvatars } from "../../data/images";
 
 const days = [
   { d: "Mon", n: "30" },
@@ -24,6 +25,78 @@ const attention = [
   { tone: "green" as const, title: "3 Papers Awaiting Review", meta: "Aarav, Priya, Saanvi" },
   { tone: "purple" as const, title: "5 Lab Reports To Grade", meta: "Grade 10 · AP Biology" },
   { tone: "sand" as const, title: "2 Parent Messages", meta: "Sent by Rajesh Mehta" },
+];
+
+type Interest = {
+  title: string;
+  time: string;
+  readers: string;
+  category: string;
+  posts: string;
+  avatars: string[];
+};
+
+const interests: Interest[] = [
+  {
+    title: "CBSE drafts new inquiry-based framework for Grade 9–12 science",
+    time: "8m ago",
+    readers: "25,571 readers",
+    category: "News",
+    posts: "25.5K posts",
+    avatars: [
+      teacherAvatars.priyaSharma,
+      teacherAvatars.rajeshMehta,
+      teacherAvatars.ananyaReddy,
+    ],
+  },
+  {
+    title: "How 3 Delhi schools doubled lab engagement in one semester",
+    time: "38m ago",
+    readers: "12,904 readers",
+    category: "Research",
+    posts: "12.9K posts",
+    avatars: [
+      teacherAvatars.kavyaNair,
+      teacherAvatars.vikramIyer,
+      teacherAvatars.arjunKrishnan,
+    ],
+  },
+  {
+    title: "AI tutors in India — teachers share what's actually working",
+    time: "21m ago",
+    readers: "2,747 readers",
+    category: "Community",
+    posts: "2,747 posts",
+    avatars: [
+      teacherAvatars.arjunKrishnan,
+      teacherAvatars.priyaSharma,
+      studentAvatars.aaravPatel,
+    ],
+  },
+  {
+    title: "Grading rubrics that cut marking time in half",
+    time: "21m ago",
+    readers: "1,831 readers",
+    category: "Teaching",
+    posts: "1,831 posts",
+    avatars: [
+      teacherAvatars.ananyaReddy,
+      teacherAvatars.vikramIyer,
+      teacherAvatars.rajeshMehta,
+    ],
+  },
+  {
+    title: "Applications open for the 2026 NCERT mentorship cohort",
+    time: "2d ago",
+    readers: "1,578 readers",
+    category: "Event",
+    posts: "1,578 posts",
+    avatars: [
+      teacherAvatars.rajeshMehta,
+      studentAvatars.emmaChen,
+      teacherAvatars.kavyaNair,
+    ],
+  },
 ];
 
 const connections = [
@@ -48,8 +121,86 @@ const connections = [
 ];
 
 export function RightSidebar() {
+  const [interestVersion, setInterestVersion] = useState<"v1" | "v2">("v1");
+  const shown = interests.slice(0, 3);
+
   return (
-    <aside className="hidden w-[320px] shrink-0 bg-white border-l border-line p-20 xl:flex flex-col gap-[40px] sticky top-[110px] h-[calc(100vh-110px)] overflow-y-auto">
+    <aside className="hidden w-[320px] shrink-0 bg-white border-l border-line p-20 xl:flex flex-col gap-[40px] sticky top-[var(--nav-h,110px)] h-[calc(100vh-var(--nav-h,110px))] overflow-y-auto">
+      {/* You might be interested in */}
+      <div className="flex flex-col gap-15">
+        <div className="flex items-center justify-between">
+          <Eyebrow>You might be interested in</Eyebrow>
+          <div
+            role="tablist"
+            aria-label="Interest layout"
+            className="inline-flex items-center rounded-pill border border-line bg-canvas p-[2px]"
+          >
+            {(["v1", "v2"] as const).map((v) => {
+              const active = v === interestVersion;
+              return (
+                <button
+                  key={v}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => setInterestVersion(v)}
+                  className={`inline-flex h-[20px] items-center rounded-pill px-[8px] text-[10px] font-semibold uppercase tracking-[0.08em] transition-colors ${
+                    active ? "bg-white text-ink shadow-soft" : "text-subtle hover:text-ink"
+                  }`}
+                >
+                  {v}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {interestVersion === "v1" ? (
+          <ul className="flex flex-col">
+            {shown.map((item, i) => (
+              <li key={i}>
+                <button
+                  type="button"
+                  className="-mx-[6px] flex w-[calc(100%+12px)] flex-col gap-[4px] rounded-md px-[6px] py-[10px] text-left transition-colors hover:bg-canvas"
+                >
+                  <p className="line-clamp-1 text-sm font-semibold text-ink leading-[1.35]">
+                    {item.title}
+                  </p>
+                  <p className="text-xs font-medium text-subtle leading-none">
+                    {item.time} · {item.readers}
+                  </p>
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <ul className="flex flex-col">
+            {shown.map((item, i) => (
+              <li key={i}>
+                <button
+                  type="button"
+                  className="-mx-[6px] flex w-[calc(100%+12px)] flex-col gap-[8px] rounded-md px-[6px] py-[12px] text-left transition-colors hover:bg-canvas"
+                >
+                  <p className="line-clamp-2 text-sm font-semibold text-ink leading-[1.3]">
+                    {item.title}
+                  </p>
+                  <div className="flex items-center gap-10">
+                    <AvatarStack avatars={item.avatars} />
+                    <p className="text-xs font-medium text-subtle leading-none">
+                      {item.time} · {item.category} · {item.posts}
+                    </p>
+                  </div>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <button className="inline-flex w-full items-center justify-center gap-5 rounded-pill bg-green-50 px-15 py-[10px] text-xs font-medium text-green-500 transition-colors hover:bg-green-100">
+          See All <ChevronRight className="h-3 w-3" />
+        </button>
+      </div>
+
       {/* Calendar */}
       <div className="flex flex-col gap-20">
         <div className="flex items-center justify-between">
@@ -120,6 +271,34 @@ export function RightSidebar() {
         </div>
       </div>
 
+      {/* People you may know */}
+      <div className="flex flex-col gap-20">
+        <Eyebrow>People you may know</Eyebrow>
+        <div className="flex flex-col gap-20">
+          {connections.map((c, i) => (
+            <div key={i} className="flex items-center gap-10">
+              <div className="shrink-0">
+                <Avatar name={c.name} src={c.avatar} tone={c.tone} size="md" />
+              </div>
+              <div className="flex flex-col gap-5 min-w-0 flex-1">
+                <p className="text-sm font-medium text-ink truncate leading-none">
+                  {c.name}
+                </p>
+                <p className="text-xs font-medium text-subtle truncate leading-none">
+                  {c.role}
+                </p>
+              </div>
+              <button className="rounded-sm border border-green-500/20 bg-green-500/10 px-[12px] py-[6px] text-xs font-medium text-green-500 transition-colors hover:bg-green-500/15">
+                Connect
+              </button>
+            </div>
+          ))}
+        </div>
+        <button className="inline-flex w-full items-center justify-center gap-5 rounded-pill bg-green-50 px-15 py-[10px] text-xs font-medium text-green-500 transition-colors hover:bg-green-100">
+          See All <ChevronRight className="h-3 w-3" />
+        </button>
+      </div>
+
       {/* Needs your attention */}
       <div className="flex flex-col gap-20">
         <Eyebrow>Needs your attention</Eyebrow>
@@ -158,34 +337,23 @@ export function RightSidebar() {
           })}
         </div>
       </div>
-
-      {/* People you may know */}
-      <div className="flex flex-col gap-20">
-        <Eyebrow>People you may know</Eyebrow>
-        <div className="flex flex-col gap-20">
-          {connections.map((c, i) => (
-            <div key={i} className="flex items-center gap-10">
-              <div className="shrink-0">
-                <Avatar name={c.name} src={c.avatar} tone={c.tone} size="md" />
-              </div>
-              <div className="flex flex-col gap-5 min-w-0 flex-1">
-                <p className="text-sm font-medium text-ink truncate leading-none">
-                  {c.name}
-                </p>
-                <p className="text-xs font-medium text-subtle truncate leading-none">
-                  {c.role}
-                </p>
-              </div>
-              <button className="rounded-sm border border-green-500/20 bg-green-500/10 px-[12px] py-[6px] text-xs font-medium text-green-500 transition-colors hover:bg-green-500/15">
-                Connect
-              </button>
-            </div>
-          ))}
-        </div>
-        <button className="inline-flex w-full items-center justify-center gap-5 rounded-pill bg-green-50 px-15 py-[10px] text-xs font-medium text-green-500 transition-colors hover:bg-green-100">
-          See All <ChevronRight className="h-3 w-3" />
-        </button>
-      </div>
     </aside>
+  );
+}
+
+/* ───────────── Small stack of circular avatars ───────────── */
+
+function AvatarStack({ avatars }: { avatars: string[] }) {
+  return (
+    <div className="flex items-center -space-x-2">
+      {avatars.slice(0, 3).map((src, i) => (
+        <span
+          key={i}
+          className="inline-flex h-[20px] w-[20px] overflow-hidden rounded-pill ring-2 ring-white bg-canvas"
+        >
+          <img src={src} alt="" className="h-full w-full object-cover" />
+        </span>
+      ))}
+    </div>
   );
 }
