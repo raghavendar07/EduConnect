@@ -1,5 +1,16 @@
 import { ReactNode } from "react";
+import {
+  Calendar,
+  FileText,
+  Heart,
+  MessageSquare,
+  Reply,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
 import { teacherAvatars } from "./images";
+
+export type NotificationBucket = "today" | "week" | "earlier";
 
 export type BaseNotification = {
   id: string;
@@ -8,6 +19,12 @@ export type BaseNotification = {
   avatarSrc?: string;
   time: string;
   body: ReactNode;
+  /** Short headline shown on the new NotificationsPage layout. */
+  title: string;
+  /** Icon rendered inside the circular tile on the new NotificationsPage. */
+  icon: LucideIcon;
+  /** Grouping for the Today / This Week / Earlier tabs. */
+  bucket: NotificationBucket;
 };
 
 export type Notification =
@@ -27,6 +44,9 @@ export const notifications: Notification[] = [
     avatarTone: "purple",
     avatarSrc: teacherAvatars.ananyaReddy,
     time: "8 min ago",
+    title: "New session participant",
+    icon: Users,
+    bucket: "today",
     body: (
       <>
         <span className="font-semibold text-ink">Ananya Reddy</span>{" "}
@@ -42,6 +62,9 @@ export const notifications: Notification[] = [
     avatarTone: "purple",
     avatarSrc: teacherAvatars.rajeshMehta,
     time: "2 hours ago",
+    title: "Committee invitation",
+    icon: Calendar,
+    bucket: "today",
     body: (
       <>
         <span className="font-semibold text-ink">Principal Mehta</span>{" "}
@@ -57,6 +80,9 @@ export const notifications: Notification[] = [
     avatarTone: "sand",
     avatarSrc: teacherAvatars.vikramIyer,
     time: "3 hours ago",
+    title: "File shared with you",
+    icon: FileText,
+    bucket: "today",
     body: (
       <>
         <span className="font-semibold text-ink">Vikram Iyer</span>{" "}
@@ -73,6 +99,9 @@ export const notifications: Notification[] = [
     avatarTone: "green",
     avatarSrc: teacherAvatars.kavyaNair,
     time: "2 days ago",
+    title: "New comment on your post",
+    icon: MessageSquare,
+    bucket: "week",
     body: (
       <>
         <span className="font-semibold text-ink">Dr. Kavya Nair</span>{" "}
@@ -88,6 +117,9 @@ export const notifications: Notification[] = [
     avatarTone: "green",
     avatarSrc: teacherAvatars.arjunKrishnan,
     time: "Yesterday",
+    title: "Your post got a like",
+    icon: Heart,
+    bucket: "week",
     body: (
       <>
         <span className="font-semibold text-ink">Arjun Krishnan</span>{" "}
@@ -103,6 +135,9 @@ export const notifications: Notification[] = [
     avatarTone: "purple",
     avatarSrc: teacherAvatars.ananyaReddy,
     time: "Yesterday",
+    title: "File shared with you",
+    icon: FileText,
+    bucket: "week",
     body: (
       <>
         <span className="font-semibold text-ink">Ananya Reddy</span>{" "}
@@ -119,6 +154,9 @@ export const notifications: Notification[] = [
     avatarTone: "sand",
     avatarSrc: teacherAvatars.vikramIyer,
     time: "3 days ago",
+    title: "New reply",
+    icon: Reply,
+    bucket: "week",
     body: (
       <>
         <span className="font-semibold text-ink">Vikram Iyer</span>{" "}
@@ -126,5 +164,42 @@ export const notifications: Notification[] = [
       </>
     ),
     comment: "Thanks for the clarification — the mitochondrion diagram really helped!",
+  },
+  {
+    id: "8",
+    variant: "default",
+    avatarName: "Principal Rajesh Mehta",
+    avatarTone: "purple",
+    avatarSrc: teacherAvatars.rajeshMehta,
+    time: "2 weeks ago",
+    title: "Term-end review scheduled",
+    icon: Calendar,
+    bucket: "earlier",
+    body: (
+      <>
+        <span className="font-semibold text-ink">Principal Mehta</span>{" "}
+        <span className="text-muted">scheduled a review on</span>{" "}
+        <span className="font-semibold text-ink">April 28, 3:00 PM</span>
+      </>
+    ),
+  },
+  {
+    id: "9",
+    variant: "file",
+    avatarName: "Dr. Kavya Nair",
+    avatarTone: "green",
+    avatarSrc: teacherAvatars.kavyaNair,
+    time: "3 weeks ago",
+    title: "File shared with you",
+    icon: FileText,
+    bucket: "earlier",
+    body: (
+      <>
+        <span className="font-semibold text-ink">Dr. Kavya Nair</span>{" "}
+        <span className="text-muted">shared</span>{" "}
+        <span className="font-semibold text-ink">optics-lab-brief.pdf</span>
+      </>
+    ),
+    file: { name: "optics-lab-brief.pdf", size: "860kb" },
   },
 ];

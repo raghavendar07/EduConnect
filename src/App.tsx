@@ -71,7 +71,7 @@ export default function App() {
           <SessionCarousel sessions={sessions} />
 
           <div className="flex flex-col gap-20">
-            <div className="sticky top-[110px] z-20 -mx-30 bg-canvas px-30 py-15">
+            <div className="sticky top-[var(--nav-h,110px)] z-20 -mx-30 bg-canvas px-30 py-15">
               <Tabs tabs={["All", "My Classes", "Student Works", "School Notices"]} />
             </div>
             <div className="flex flex-col gap-20">

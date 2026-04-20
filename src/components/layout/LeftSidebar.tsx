@@ -22,7 +22,7 @@ const availability = [
 
 export function LeftSidebar() {
   return (
-    <aside className="hidden w-[300px] shrink-0 bg-white border-r border-line p-20 lg:flex flex-col gap-20 sticky top-[110px] h-[calc(100vh-110px)] overflow-y-auto">
+    <aside className="hidden w-[300px] shrink-0 bg-white border-r border-line p-20 lg:flex flex-col gap-20 sticky top-[var(--nav-h,110px)] h-[calc(100vh-var(--nav-h,110px))] overflow-y-auto">
       {/* Primary nav */}
       <nav className="flex flex-col gap-5">
         {nav.map((item) => (
