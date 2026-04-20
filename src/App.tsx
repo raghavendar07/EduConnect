@@ -25,6 +25,10 @@ export default function App() {
   const [selfProfile, setSelfProfile] = useState<Profile | undefined>(() =>
     getProfile(SELF_PROFILE_ID)
   );
+  const onProfileView =
+    view.name === "profile" || view.name === "self";
+  // v3 is the only profile layout currently shown — always full-bleed.
+  const fullBleedProfile = onProfileView;
 
   const openProfile = (id: string) => {
     setView({ name: "profile", id });
@@ -35,8 +39,7 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   const openNotifications = () => {
-    setView({ name: "notifications" });
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    // Notifications full page is hidden for now.
   };
   const openMessages = () => {
     setView({ name: "messages" });
@@ -49,7 +52,11 @@ export default function App() {
 
   return (
     <PageLayout
-      hideSidebars={view.name === "notifications" || view.name === "messages"}
+      hideSidebars={
+        view.name === "notifications" ||
+        view.name === "messages" ||
+        fullBleedProfile
+      }
       hideMenu={view.name === "notifications" || view.name === "messages"}
       onOpenNotifications={openNotifications}
       onOpenMessages={openMessages}

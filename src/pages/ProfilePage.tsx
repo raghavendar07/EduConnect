@@ -1,11 +1,17 @@
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import {
   ArrowUpRight,
+  Bookmark,
   Briefcase,
   ChevronLeft,
   GraduationCap,
+  Heart,
   MapPin,
+  MessageCircle,
   MoreHorizontal,
+  Pencil,
+  Send,
+  Share2,
   User,
 } from "lucide-react";
 import { ProfileBanner } from "../components/profile/ProfileBanner";
@@ -18,23 +24,30 @@ import {
 import { Tabs } from "../components/sections/Tabs";
 import { PostCard, type Post } from "../components/cards/PostCard";
 import { Icon } from "../components/ui/Icon";
+import { Tag } from "../components/ui/Tag";
 import type { Profile } from "../types/profile";
 
-type PageVersion = "v1" | "v2";
+export type PageVersion = "v1" | "v2" | "v3";
 
 export function ProfilePage({
   profile,
   onBack,
   isSelf = false,
   onUpdate,
+  version: versionProp,
+  onVersionChange,
 }: {
   profile: Profile;
   onBack: () => void;
   isSelf?: boolean;
   onUpdate?: (patch: Partial<Profile>) => void;
+  version?: PageVersion;
+  onVersionChange?: (v: PageVersion) => void;
 }) {
   const [editing, setEditing] = useState(false);
-  const [version, setVersion] = useState<PageVersion>("v1");
+  // v1 and v2 are hidden for now — v3 is the only layout shown.
+  void versionProp;
+  void onVersionChange;
 
   const handleSave = (patch: ProfileEditablePatch) => {
     if (!onUpdate) return;
@@ -48,55 +61,12 @@ export function ProfilePage({
 
   return (
     <div className="flex flex-col gap-20">
-      <VersionSwitcher version={version} onChange={setVersion} />
-
-      {version === "v1" ? (
-        <>
-          <ProfileBanner
-            profile={profile}
-            onBack={onBack}
-            isSelf={isSelf}
-            onEdit={isSelf ? () => setEditing(true) : undefined}
-          />
-          <ProfileStats profile={profile} />
-          <ProfileAbout profile={profile} />
-
-          <div className="flex flex-col gap-25">
-            <div className="sticky top-[var(--nav-h,110px)] z-20 -mx-30 bg-canvas px-30 py-15">
-              <div className="flex flex-col gap-15">
-                <h2 className="font-display text-4xl text-ink">
-                  {isSelf ? "Posts" : "Activity"}
-                </h2>
-                <Tabs
-                  tabs={
-                    isSelf
-                      ? ["Posts", "Images", "Videos", "Saved"]
-                      : ["Posts", "Images", "Videos", "Comments"]
-                  }
-                />
-              </div>
-            </div>
-            <div className="flex flex-col gap-20">
-              {profile.posts.length === 0 ? (
-                <div className="rounded-[20px] border border-dashed border-line bg-white p-30 text-center text-sm text-muted">
-                  {isSelf
-                    ? "You haven't posted anything yet. Share an update to get started."
-                    : "No posts yet."}
-                </div>
-              ) : (
-                profile.posts.map((p, i) => <PostCard key={i} post={p} />)
-              )}
-            </div>
-          </div>
-        </>
-      ) : (
-        <ProfileV2
-          profile={profile}
-          onBack={onBack}
-          isSelf={isSelf}
-          onEdit={isSelf ? () => setEditing(true) : undefined}
-        />
-      )}
+      <ProfileV3
+        profile={profile}
+        onBack={onBack}
+        isSelf={isSelf}
+        onEdit={isSelf ? () => setEditing(true) : undefined}
+      />
 
       {editing && isSelf && (
         <EditProfileModal
@@ -125,7 +95,7 @@ function VersionSwitcher({
         aria-label="Profile layout"
         className="inline-flex items-center rounded-pill border border-line bg-canvas p-[2px]"
       >
-        {(["v1", "v2"] as const).map((v) => {
+        {(["v1", "v2", "v3"] as const).map((v) => {
           const active = v === version;
           return (
             <button
@@ -146,7 +116,11 @@ function VersionSwitcher({
         })}
       </div>
       <span className="hidden text-[11px] font-medium text-subtle md:inline">
-        {version === "v1" ? "Detailed profile" : "Link-in-bio style"}
+        {version === "v1"
+          ? "Detailed profile"
+          : version === "v2"
+          ? "Link-in-bio style"
+          : "Portfolio cover"}
       </span>
     </div>
   );
@@ -628,4 +602,534 @@ function initials(name: string): string {
     .slice(0, 2)
     .join("")
     .toUpperCase();
+}
+
+/* ───────────── V3 — portfolio cover style ───────────── */
+
+type V3Tab = "posts" | "comments" | "resources";
+
+function ProfileV3({
+  profile,
+  onBack,
+  isSelf,
+  onEdit,
+}: {
+  profile: Profile;
+  onBack?: () => void;
+  isSelf?: boolean;
+  onEdit?: () => void;
+}) {
+  const [active, setActive] = useState<V3Tab>("posts");
+  const tabs: Array<{ key: V3Tab; label: string }> = [
+    { key: "posts", label: "Posts" },
+    { key: "comments", label: "Comments" },
+    { key: "resources", label: "Resources" },
+  ];
+  return (
+    <div className="-mx-30 flex flex-col bg-white pb-45">
+      {/* Cover banner — centered, 1300px */}
+      <div className="mx-auto w-full max-w-[1300px]">
+        <div className="relative h-[260px] overflow-hidden rounded-[24px] bg-[linear-gradient(120deg,#eef7f0_0%,#f1f1ea_55%,#f5f0e6_100%)]">
+          {/* Back button */}
+          {onBack && (
+            <button
+              onClick={onBack}
+              className="absolute left-20 top-20 inline-flex h-[36px] items-center gap-[6px] rounded-pill bg-white/95 px-15 text-sm font-semibold text-ink shadow-soft transition-colors hover:bg-white"
+            >
+              <ChevronLeft className="h-[16px] w-[16px]" strokeWidth={2} />
+              Back to feed
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Body — centered */}
+      <div className="mx-auto grid w-full max-w-[1180px] grid-cols-[440px_1fr] gap-[60px]">
+        {/* Sidebar — shifted 80px right */}
+        <aside className="flex flex-col gap-25 pl-[80px] pt-20">
+          {/* Avatar overlapping banner — image aligned to top so face shows */}
+          <div className="relative z-10 -mt-[120px] inline-flex h-[180px] w-[180px] overflow-hidden rounded-pill bg-sand-200 ring-[6px] ring-white">
+            {profile.avatar ? (
+              <img
+                src={profile.avatar}
+                alt={profile.name}
+                className="h-full w-full object-cover object-top"
+              />
+            ) : (
+              <span className="inline-flex h-full w-full items-center justify-center font-display text-[40px] text-ink">
+                {initials(profile.name)}
+              </span>
+            )}
+          </div>
+
+          {/* Identity — mirrors v1 layout */}
+          <div className="flex flex-col gap-10">
+            <div className="flex flex-col gap-5">
+              <h1 className="font-display text-4xl leading-[1.1] text-ink">
+                {profile.name}
+              </h1>
+              <p className="text-base text-muted">
+                <span className="font-medium text-ink">{profile.role}</span>
+                <span className="mx-5 text-subtle/60">·</span>
+                <span>{profile.school}</span>
+              </p>
+            </div>
+
+            <p className="text-sm text-muted">
+              <span className="font-semibold text-ink">
+                {formatCount(profile.stats.followers)}
+              </span>{" "}
+              Followers
+              <span className="mx-10" />
+              <span className="font-semibold text-ink">
+                {formatCount(profile.stats.following)}
+              </span>{" "}
+              Following
+            </p>
+
+            <div className="flex flex-wrap items-center gap-10 pt-5 text-xs font-medium text-subtle">
+              <span className="inline-flex items-center gap-5">
+                <MapPin className="h-[14px] w-[14px]" /> {profile.location}
+              </span>
+              <span className="h-[4px] w-[4px] rounded-pill bg-subtle/40" />
+              <span>{profile.joined}</span>
+            </div>
+
+            <p className="line-clamp-2 text-sm leading-[1.5] text-[#374151]">
+              {profile.bio}
+            </p>
+
+            {profile.tags.length > 0 && (
+              <SidebarTagRow tags={profile.tags} />
+            )}
+          </div>
+
+          {/* Actions — matches v1 styles */}
+          <div className="flex flex-col gap-10">
+            {isSelf ? (
+              <>
+                <button
+                  onClick={onEdit}
+                  className="inline-flex h-[44px] items-center justify-center gap-10 rounded-pill bg-ink px-20 text-sm font-medium text-white transition-colors hover:bg-black/85"
+                >
+                  <Pencil className="h-[18px] w-[18px]" strokeWidth={1.8} />
+                  Edit profile
+                </button>
+                <button className="inline-flex h-[44px] items-center justify-center gap-10 rounded-pill border border-line-soft bg-white px-20 text-sm font-medium text-ink transition-colors hover:bg-canvas">
+                  <Share2 className="h-[18px] w-[18px]" strokeWidth={1.8} />
+                  Share profile
+                </button>
+              </>
+            ) : (
+              <>
+                <button className="inline-flex h-[44px] items-center justify-center gap-10 rounded-pill bg-ink px-20 text-sm font-medium text-white transition-colors hover:bg-black/85">
+                  <Icon name="userAdd" size={18} />
+                  Follow
+                </button>
+                <button className="inline-flex h-[44px] items-center justify-center gap-10 rounded-pill border border-line-soft bg-white px-20 text-sm font-medium text-ink transition-colors hover:bg-canvas">
+                  <Icon name="bubbleChat" size={18} />
+                  Message
+                </button>
+              </>
+            )}
+          </div>
+
+          {/* Experience */}
+          <SidebarList
+            title="Experience"
+            emptyLabel="No experience added yet."
+            items={profile.experience.map((e) => ({
+              title: e.role,
+              subtitle: e.organization,
+              period: e.period,
+              tone: e.tone,
+              initialsOf: e.organization,
+              logo: e.logo,
+            }))}
+          />
+
+          {/* Education */}
+          <SidebarList
+            title="Education"
+            emptyLabel="No education added yet."
+            items={profile.education.map((e) => ({
+              title: e.degree,
+              subtitle: e.institution,
+              period: e.period,
+              tone: e.tone,
+              initialsOf: e.institution,
+              logo: e.logo,
+            }))}
+          />
+        </aside>
+
+        {/* Main content — fixed 680px */}
+        <main className="flex pt-30">
+          <div className="flex w-[680px] max-w-full flex-col gap-25">
+            {/* Tabs */}
+            <div
+              role="tablist"
+              aria-label="Profile content"
+              className="flex items-center gap-30 border-b border-line"
+            >
+              {tabs.map((t) => {
+                const isActive = t.key === active;
+                return (
+                  <button
+                    key={t.key}
+                    role="tab"
+                    aria-selected={isActive}
+                    onClick={() => setActive(t.key)}
+                    className={`relative -mb-[1px] pb-[14px] text-base font-semibold transition-colors ${
+                      isActive ? "text-ink" : "text-muted hover:text-ink"
+                    }`}
+                  >
+                    {t.label}
+                    {isActive && (
+                      <span
+                        aria-hidden
+                        className="absolute inset-x-0 bottom-0 h-[2px] rounded-pill bg-ink"
+                      />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Content */}
+            {active === "posts" && <WorkGrid profile={profile} isSelf={isSelf} />}
+            {active === "comments" && <EmptyGridState label="comments" />}
+            {active === "resources" && <EmptyGridState label="resources" />}
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+}
+
+function WorkGrid({ profile, isSelf }: { profile: Profile; isSelf?: boolean }) {
+  const posts = profile.posts;
+  if (posts.length === 0) {
+    return (
+      <div className="rounded-[20px] border border-dashed border-line bg-canvas/60 p-30 text-center text-sm text-muted">
+        {isSelf ? "You haven't published any work yet." : "No work to show yet."}
+      </div>
+    );
+  }
+  return (
+    <div className="flex flex-col gap-20">
+      {posts.map((p, i) => (
+        <V3FeedCard key={i} post={p} />
+      ))}
+    </div>
+  );
+}
+
+function SidebarTagRow({ tags }: { tags: string[] }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const measureRef = useRef<HTMLDivElement>(null);
+  const [visibleCount, setVisibleCount] = useState(tags.length);
+
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+    const measure = measureRef.current;
+    if (!container || !measure) return;
+    const compute = () => {
+      const width = container.offsetWidth;
+      if (width === 0) return;
+      const tagEls = Array.from(
+        measure.querySelectorAll<HTMLElement>("[data-tag]")
+      );
+      const moreEl = measure.querySelector<HTMLElement>("[data-more]");
+      const moreWidth = moreEl?.offsetWidth ?? 0;
+      const gap = 10;
+      let used = 0;
+      let count = 0;
+      for (let i = 0; i < tagEls.length; i++) {
+        const w = tagEls[i].offsetWidth;
+        const nextUsed = count === 0 ? w : used + gap + w;
+        const remaining = tagEls.length - (i + 1);
+        const reserve = remaining > 0 ? moreWidth + gap : 0;
+        if (nextUsed + reserve <= width) {
+          used = nextUsed;
+          count = i + 1;
+        } else break;
+      }
+      setVisibleCount(count);
+    };
+    compute();
+    const ro = new ResizeObserver(compute);
+    ro.observe(container);
+    return () => ro.disconnect();
+  }, [tags]);
+
+  const hiddenCount = Math.max(0, tags.length - visibleCount);
+  return (
+    <div
+      ref={containerRef}
+      className="relative flex flex-nowrap items-center gap-10 pt-5"
+    >
+      {/* Measurement layer — invisible, absolutely positioned */}
+      <div
+        ref={measureRef}
+        aria-hidden
+        className="pointer-events-none invisible absolute left-0 top-0 flex items-center gap-10 whitespace-nowrap"
+      >
+        {tags.map((t) => (
+          <span key={t} data-tag>
+            <Tag tone="neutral" size="md" className="shrink-0 whitespace-nowrap">
+              {t}
+            </Tag>
+          </span>
+        ))}
+        <span data-more>
+          <Tag tone="neutral" size="md" className="shrink-0 whitespace-nowrap">
+            +{tags.length}
+          </Tag>
+        </span>
+      </div>
+      {/* Visible tags */}
+      {tags.slice(0, visibleCount).map((t) => (
+        <Tag
+          key={t}
+          tone="neutral"
+          size="md"
+          className="shrink-0 whitespace-nowrap"
+        >
+          {t}
+        </Tag>
+      ))}
+      {hiddenCount > 0 && (
+        <Tag tone="neutral" size="md" className="shrink-0 whitespace-nowrap">
+          +{hiddenCount}
+        </Tag>
+      )}
+    </div>
+  );
+}
+
+function V3FeedCard({ post }: { post: Post }) {
+  const images = post.images ?? [];
+  const cover = images[0];
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <article className="flex flex-col gap-15 rounded-[20px] border border-line bg-white p-15">
+      <div className="flex flex-col gap-10 px-5 pt-5">
+        <h3 className="font-display text-xl leading-[1.2] text-ink">
+          {post.title}
+        </h3>
+
+        <div className="flex flex-col items-start gap-5">
+          <p
+            className={`text-sm leading-[1.55] text-muted ${
+              expanded ? "" : "line-clamp-3"
+            }`}
+          >
+            {post.excerpt}
+          </p>
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            className="text-sm font-semibold text-ink transition-colors hover:text-subtle"
+          >
+            {expanded ? "Read less" : "Read more"}
+          </button>
+        </div>
+      </div>
+
+      {cover && (
+        <div className="relative h-[360px] w-full overflow-hidden rounded-[16px] bg-canvas">
+          <img src={cover} alt="" className="h-full w-full object-cover" />
+          {images.length > 1 && (
+            <div className="absolute bottom-15 left-1/2 flex -translate-x-1/2 items-center gap-[6px]">
+              {images.map((_, i) => (
+                <span
+                  key={i}
+                  className={
+                    i === 0
+                      ? "h-[6px] w-[20px] rounded-pill bg-white"
+                      : "h-[6px] w-[6px] rounded-pill bg-white/60"
+                  }
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Reaction footer — matches v1 PostCard */}
+      <footer className="flex items-center justify-between border-t border-line px-5 pt-10">
+        <div className="flex items-center gap-15">
+          <button className="inline-flex items-center gap-5 text-sm font-semibold text-subtle transition-colors hover:text-ink">
+            <Heart className="h-[20px] w-[20px] fill-[#e57373] text-[#e57373]" />
+            <span>{post.stats.likes}</span>
+          </button>
+          <button className="inline-flex items-center gap-5 text-sm font-semibold text-subtle transition-colors hover:text-ink">
+            <MessageCircle className="h-[20px] w-[20px]" strokeWidth={1.8} />
+            <span>{post.stats.comments}</span>
+          </button>
+          <button
+            aria-label="Share"
+            className="inline-flex h-[24px] w-[24px] items-center justify-center text-subtle transition-colors hover:text-ink"
+          >
+            <Send className="h-[20px] w-[20px]" strokeWidth={1.8} />
+          </button>
+        </div>
+        <div className="flex items-center gap-10">
+          <button
+            aria-label="Bookmark"
+            className="inline-flex h-[24px] w-[24px] items-center justify-center text-subtle transition-colors hover:text-ink"
+          >
+            <Bookmark className="h-[20px] w-[20px]" strokeWidth={1.8} />
+          </button>
+          <button
+            aria-label="More options"
+            className="inline-flex h-[20px] w-[20px] items-center justify-center text-subtle transition-colors hover:text-ink"
+          >
+            <MoreHorizontal className="h-[20px] w-[20px]" strokeWidth={1.8} />
+          </button>
+        </div>
+      </footer>
+    </article>
+  );
+}
+
+function WorkTile({
+  post,
+  tone,
+}: {
+  post: Post;
+  tone: "green" | "purple" | "sand";
+}) {
+  const cover = post.images && post.images[0];
+  return (
+    <button
+      type="button"
+      className={`group relative flex h-[300px] w-full flex-col justify-end overflow-hidden rounded-[16px] text-left transition-transform hover:-translate-y-[2px] ${
+        cover ? "bg-ink text-white" : `${toneSurface[tone]} ${toneInk[tone]}`
+      }`}
+    >
+      {cover && (
+        <>
+          <img
+            src={cover}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+        </>
+      )}
+      <div className="relative flex items-end justify-between gap-15 p-20">
+        <div className="flex min-w-0 flex-col gap-[4px]">
+          <p
+            className={`line-clamp-2 text-base font-semibold leading-[1.3] ${
+              cover ? "text-white" : ""
+            }`}
+          >
+            {post.title}
+          </p>
+          <p
+            className={`text-[12px] font-medium ${
+              cover ? "text-white/80" : "text-muted"
+            }`}
+          >
+            {post.time} · {post.stats.likes} likes
+          </p>
+        </div>
+        <span
+          className={`inline-flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-pill transition-transform group-hover:-translate-y-[2px] ${
+            cover ? "bg-white text-ink" : "bg-white text-ink"
+          }`}
+        >
+          <ArrowUpRight className="h-[16px] w-[16px]" strokeWidth={2} />
+        </span>
+      </div>
+    </button>
+  );
+}
+
+function EmptyGridState({ label }: { label: string }) {
+  return (
+    <div className="rounded-[20px] border border-dashed border-line bg-canvas/60 p-30 text-center text-sm text-muted">
+      No {label} yet.
+    </div>
+  );
+}
+
+type SidebarListItem = {
+  title: string;
+  subtitle: string;
+  period: string;
+  tone: "green" | "purple" | "sand";
+  initialsOf: string;
+  logo?: string;
+};
+
+function SidebarList({
+  title,
+  items,
+  emptyLabel,
+}: {
+  title: string;
+  items: SidebarListItem[];
+  emptyLabel: string;
+}) {
+  return (
+    <section className="flex flex-col gap-10">
+      <h3 className="font-display text-xl leading-none text-ink">{title}</h3>
+      {items.length === 0 ? (
+        <p className="text-xs text-subtle">{emptyLabel}</p>
+      ) : (
+        <ul className="flex flex-col">
+          {items.map((it, i) => (
+            <SidebarListRow key={i} item={it} isLast={i === items.length - 1} />
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+function SidebarListRow({
+  item,
+  isLast,
+}: {
+  item: SidebarListItem;
+  isLast: boolean;
+}) {
+  const toneClass = {
+    green: "bg-green-500 text-white",
+    purple: "bg-purple-700 text-white",
+    sand: "bg-sand-200 text-ink",
+  }[item.tone];
+  const init = item.initialsOf
+    .split(/\s+/)
+    .map((w) => w[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+  return (
+    <li className={`flex gap-10 py-10 ${isLast ? "" : "border-b border-line"}`}>
+      {item.logo ? (
+        <span className="inline-flex h-[36px] w-[36px] shrink-0 items-center justify-center overflow-hidden rounded-pill border border-line bg-white">
+          <img src={item.logo} alt={item.title} className="h-full w-full object-cover" />
+        </span>
+      ) : (
+        <span
+          className={`inline-flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-pill text-[11px] font-semibold ${toneClass}`}
+        >
+          {init}
+        </span>
+      )}
+      <div className="flex min-w-0 flex-1 flex-col gap-[2px]">
+        <p className="truncate text-sm font-semibold leading-[1.25] text-ink">
+          {item.title}
+        </p>
+        <p className="truncate text-xs text-muted">{item.subtitle}</p>
+        <p className="text-[11px] font-medium text-subtle">{item.period}</p>
+      </div>
+    </li>
+  );
 }

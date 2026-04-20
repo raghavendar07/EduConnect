@@ -68,7 +68,7 @@ export const posts: Post[] = [
     },
     title: "Three Students Selected for Regional Science Symposium",
     excerpt:
-      "Our cell biology unit has produced remarkable student research. The quality of hypothesis formulation and data analysis exceeded…",
+      "Our cell biology unit has produced remarkable student research this term. The quality of hypothesis formulation, experimental design and data analysis has genuinely exceeded what I expected at Grade 10. Three of our students were invited to present at the Regional Science Symposium next month — a lovely recognition of the late evenings they've put in at the lab, and the thoughtful feedback their peer review group gave on each iteration of the methodology.",
     time: "Today, 6 PM",
     images: [feedImages.studentsAtDesks],
     stats: { likes: 50, comments: 50 },
@@ -84,7 +84,7 @@ export const posts: Post[] = [
     },
     title: "Snapshots from Our Weekend Science Club",
     excerpt:
-      "A peek into the weekend lab sessions — microscope work, peer reviews, and a lot of curious questions from our Grade 10 cohort.",
+      "A peek into the weekend lab sessions — microscope work, peer reviews, and a lot of curious questions from our Grade 10 cohort. We ran a short mitosis observation followed by an open Q&A, and the students practically ran the second half themselves. If you're thinking of starting a club on your campus, my biggest piece of advice is to let students own the agenda early — the engagement shifts completely when they're the ones asking, not just answering.",
     time: "Today, 6 PM",
     images: [
       feedImages.teacherClassroom,
