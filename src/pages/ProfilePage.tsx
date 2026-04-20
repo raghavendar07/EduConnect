@@ -9,6 +9,7 @@ import {
   MapPin,
   MessageCircle,
   MoreHorizontal,
+  MoreVertical,
   Pencil,
   Send,
   Share2,
@@ -626,7 +627,7 @@ function ProfileV3({
     { key: "resources", label: "Resources" },
   ];
   return (
-    <div className="-mx-30 flex flex-col bg-white pb-45">
+    <div className="-mx-30 -mt-30 flex flex-col bg-white pt-30 pb-45">
       {/* Cover banner — centered, 1300px */}
       <div className="mx-auto w-full max-w-[1300px]">
         <div className="relative h-[260px] overflow-hidden rounded-[24px] bg-[linear-gradient(120deg,#eef7f0_0%,#f1f1ea_55%,#f5f0e6_100%)]">
@@ -646,7 +647,7 @@ function ProfileV3({
       {/* Body — centered */}
       <div className="mx-auto grid w-full max-w-[1180px] grid-cols-[440px_1fr] gap-[60px]">
         {/* Sidebar — shifted 80px right */}
-        <aside className="flex flex-col gap-25 pl-[80px] pt-20">
+        <aside className="flex flex-col gap-25 pl-[30px] pt-20">
           {/* Avatar overlapping banner — image aligned to top so face shows */}
           <div className="relative z-10 -mt-[120px] inline-flex h-[180px] w-[180px] overflow-hidden rounded-pill bg-sand-200 ring-[6px] ring-white">
             {profile.avatar ? (
@@ -819,7 +820,7 @@ function WorkGrid({ profile, isSelf }: { profile: Profile; isSelf?: boolean }) {
   return (
     <div className="flex flex-col gap-20">
       {posts.map((p, i) => (
-        <V3FeedCard key={i} post={p} />
+        <V3FeedCard key={i} post={p} isSelf={isSelf} />
       ))}
     </div>
   );
@@ -908,39 +909,85 @@ function SidebarTagRow({ tags }: { tags: string[] }) {
   );
 }
 
-function V3FeedCard({ post }: { post: Post }) {
+function V3FeedCard({ post, isSelf }: { post: Post; isSelf?: boolean }) {
   const images = post.images ?? [];
   const cover = images[0];
   const [expanded, setExpanded] = useState(false);
+  const CLAMP = 180;
+  const combinedLen = post.title.length + 1 + post.excerpt.length;
+  const needsClamp = combinedLen > CLAMP;
+  const trimmedExcerpt = !expanded && needsClamp
+    ? post.excerpt.slice(0, Math.max(0, CLAMP - post.title.length - 1)).trimEnd() + "…"
+    : post.excerpt;
 
   return (
-    <article className="flex flex-col gap-15 rounded-[20px] border border-line bg-white p-15">
-      <div className="flex flex-col gap-10 px-5 pt-5">
-        <h3 className="font-display text-xl leading-[1.2] text-ink">
-          {post.title}
-        </h3>
-
-        <div className="flex flex-col items-start gap-5">
-          <p
-            className={`text-sm leading-[1.55] text-muted ${
-              expanded ? "" : "line-clamp-3"
-            }`}
-          >
-            {post.excerpt}
-          </p>
+    <article className="flex flex-col gap-15 rounded-[20px] border border-line bg-white p-15 shadow-soft">
+      {/* Header */}
+      <header className="flex items-start justify-between gap-10">
+        <div className="flex min-w-0 items-center gap-10">
+          <div className="h-[48px] w-[48px] shrink-0 overflow-hidden rounded-pill bg-sand-200">
+            {post.author.avatar && (
+              <img
+                src={post.author.avatar}
+                alt={post.author.name}
+                className="h-full w-full object-cover"
+              />
+            )}
+          </div>
+          <div className="flex min-w-0 flex-col leading-[1.3]">
+            <p className="truncate text-base font-semibold text-ink">
+              {post.author.name}
+            </p>
+            <p className="truncate text-sm text-muted">
+              <span>{post.author.role}</span>
+              <span className="mx-[6px] inline-block h-[3px] w-[3px] -translate-y-[3px] rounded-pill bg-subtle/60 align-middle" />
+              <span>{post.author.school}</span>
+              <span className="mx-[6px] inline-block h-[3px] w-[3px] -translate-y-[3px] rounded-pill bg-subtle/60 align-middle" />
+              <span>{post.time}</span>
+            </p>
+          </div>
+        </div>
+        <div className="flex shrink-0 items-center gap-10">
+          {!isSelf && (
+            <button className="inline-flex h-[36px] items-center rounded-pill border border-line bg-white px-15 text-sm font-semibold text-ink transition-colors hover:bg-canvas">
+              Follow
+            </button>
+          )}
           <button
-            type="button"
-            onClick={() => setExpanded((v) => !v)}
-            className="text-sm font-semibold text-ink transition-colors hover:text-subtle"
+            aria-label="More options"
+            className="inline-flex h-[28px] w-[28px] items-center justify-center rounded-pill text-muted transition-colors hover:bg-canvas"
           >
-            {expanded ? "Read less" : "Read more"}
+            <MoreVertical className="h-[20px] w-[20px]" strokeWidth={1.8} />
           </button>
         </div>
-      </div>
+      </header>
 
+      {/* Body text — title + excerpt inline, with inline Read more */}
+      <p className="text-sm leading-[1.5] text-ink">
+        <span>{post.title}</span>{" "}
+        <span>{trimmedExcerpt}</span>
+        {needsClamp && (
+          <>
+            {" "}
+            <button
+              type="button"
+              onClick={() => setExpanded((v) => !v)}
+              className="font-semibold text-green-700 transition-colors hover:text-green-600"
+            >
+              {expanded ? "Read less" : "Read more"}
+            </button>
+          </>
+        )}
+      </p>
+
+      {/* Media */}
       {cover && (
-        <div className="relative h-[360px] w-full overflow-hidden rounded-[16px] bg-canvas">
-          <img src={cover} alt="" className="h-full w-full object-cover" />
+        <div className="relative w-full overflow-hidden rounded-[16px] bg-canvas">
+          <img
+            src={cover}
+            alt=""
+            className="block max-h-[420px] w-full object-cover"
+          />
           {images.length > 1 && (
             <div className="absolute bottom-15 left-1/2 flex -translate-x-1/2 items-center gap-[6px]">
               {images.map((_, i) => (
@@ -958,8 +1005,8 @@ function V3FeedCard({ post }: { post: Post }) {
         </div>
       )}
 
-      {/* Reaction footer — matches v1 PostCard */}
-      <footer className="flex items-center justify-between border-t border-line px-5 pt-10">
+      {/* Footer */}
+      <footer className="flex items-center justify-between px-5">
         <div className="flex items-center gap-15">
           <button className="inline-flex items-center gap-5 text-sm font-semibold text-subtle transition-colors hover:text-ink">
             <Heart className="h-[20px] w-[20px] fill-[#e57373] text-[#e57373]" />

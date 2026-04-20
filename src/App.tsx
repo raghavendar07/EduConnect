@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { PageLayout } from "./components/layout/PageLayout";
 import { ProfileHeader } from "./components/cards/ProfileHeader";
 import { SessionCarousel } from "./components/cards/SessionCarousel";
 import { Tabs } from "./components/sections/Tabs";
 import { PostCard } from "./components/cards/PostCard";
+import { YouMightLike } from "./components/cards/YouMightLike";
 import { ProfilePage } from "./pages/ProfilePage";
 import { NotificationsPage } from "./pages/NotificationsPage";
 import { MessagesPage } from "./pages/MessagesPage";
@@ -83,7 +84,17 @@ export default function App() {
             </div>
             <div className="flex flex-col gap-20">
               {posts.map((p, i) => (
-                <PostCard key={i} post={p} onAuthorClick={openProfile} />
+                <Fragment key={i}>
+                  <PostCard post={p} onAuthorClick={openProfile} />
+                  {i === 2 && (
+                    <YouMightLike
+                      posts={posts
+                        .filter((x) => x.images && x.images.length > 0 && x !== p)
+                        .slice(0, 6)}
+                      onAuthorClick={openProfile}
+                    />
+                  )}
+                </Fragment>
               ))}
             </div>
           </div>

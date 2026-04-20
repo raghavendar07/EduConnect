@@ -241,126 +241,129 @@ export function EditProfileModal({
         </div>
       </header>
 
-      {/* Body */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <nav
-          aria-label="Edit profile sections"
-          className="flex w-[280px] shrink-0 flex-col border-r border-line bg-white"
-        >
-          <ul className="flex flex-col">
-            {SECTIONS.map((s, i) => {
-              const isActive = s.key === active;
-              return (
-                <li key={s.key}>
-                  <button
-                    type="button"
-                    onClick={() => setActive(s.key)}
-                    className={`relative flex w-full items-center px-25 py-20 text-left text-[15px] transition-colors ${
-                      isActive
-                        ? "font-semibold text-[#2563eb]"
-                        : "font-medium text-subtle hover:text-ink"
-                    } ${i < SECTIONS.length - 1 ? "border-b border-line" : ""}`}
-                  >
-                    {isActive && (
-                      <span
-                        aria-hidden
-                        className="absolute left-0 top-0 h-full w-[3px] bg-[#2563eb]"
-                      />
-                    )}
-                    {s.label}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-          <button
-            type="button"
-            onClick={() => alert("Custom sections coming soon")}
-            className="mt-[1px] flex items-center gap-[6px] border-t border-line bg-white px-25 py-20 text-left text-[15px] font-medium text-subtle transition-colors hover:text-ink"
-          >
-            <Plus className="h-[16px] w-[16px]" strokeWidth={2} />
-            Add a custom section
-          </button>
-        </nav>
+      {/* Body — mirrors V3 profile layout */}
+      <div className="flex-1 overflow-y-auto bg-white pb-45">
+        <div className="mx-auto grid w-full max-w-[1180px] grid-cols-[440px_1fr] gap-[60px] pt-30">
+          {/* Sidebar — section navigation in place of profile data */}
+          <aside className="flex flex-col gap-0 pl-[80px]">
+            <nav aria-label="Edit profile sections">
+              <ul className="flex flex-col rounded-[16px] border border-line bg-white">
+                {SECTIONS.map((s, i) => {
+                  const isActive = s.key === active;
+                  return (
+                    <li key={s.key}>
+                      <button
+                        type="button"
+                        onClick={() => setActive(s.key)}
+                        className={`relative flex w-full items-center px-20 py-15 text-left text-[15px] transition-colors ${
+                          isActive
+                            ? "font-semibold text-[#2563eb]"
+                            : "font-medium text-subtle hover:text-ink"
+                        } ${i < SECTIONS.length - 1 ? "border-b border-line" : ""}`}
+                      >
+                        {isActive && (
+                          <span
+                            aria-hidden
+                            className="absolute left-0 top-0 h-full w-[3px] bg-[#2563eb]"
+                          />
+                        )}
+                        {s.label}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+              <button
+                type="button"
+                onClick={() => alert("Custom sections coming soon")}
+                className="mt-10 flex w-full items-center gap-[6px] rounded-[16px] border border-dashed border-line bg-white px-20 py-15 text-left text-[15px] font-medium text-subtle transition-colors hover:text-ink"
+              >
+                <Plus className="h-[16px] w-[16px]" strokeWidth={2} />
+                Add a custom section
+              </button>
+            </nav>
+          </aside>
 
-        {/* Content */}
-        <form
-          id="edit-profile-form"
-          onSubmit={handleSave}
-          className="flex-1 overflow-y-auto bg-white"
-        >
-          <div className="mx-auto max-w-[860px] px-45 py-30">
-            {active === "basic" && (
-              <BasicSection
-                firstName={firstName}
-                lastName={lastName}
-                role={role}
-                school={school}
-                country={country}
-                city={city}
-                website={website}
-                avatar={avatar}
-                setFirstName={setFirstName}
-                setLastName={setLastName}
-                setRole={setRole}
-                setSchool={setSchool}
-                setCountry={setCountry}
-                setCity={setCity}
-                setWebsite={setWebsite}
-                setAvatar={setAvatar}
-                fallbackName={profile.name}
-              />
-            )}
+          {/* Main content — form for active section, matches feed column */}
+          <main className="flex">
+            <form
+              id="edit-profile-form"
+              onSubmit={handleSave}
+              className="flex w-[680px] max-w-full flex-col"
+            >
+              <div className="rounded-[20px] border border-line bg-white p-25">
+                {active === "basic" && (
+                  <BasicSection
+                    firstName={firstName}
+                    lastName={lastName}
+                    role={role}
+                    school={school}
+                    country={country}
+                    city={city}
+                    website={website}
+                    avatar={avatar}
+                    setFirstName={setFirstName}
+                    setLastName={setLastName}
+                    setRole={setRole}
+                    setSchool={setSchool}
+                    setCountry={setCountry}
+                    setCity={setCity}
+                    setWebsite={setWebsite}
+                    setAvatar={setAvatar}
+                    fallbackName={profile.name}
+                  />
+                )}
 
-            {active === "experience" && (
-              <ExperienceSection
-                experience={experience}
-                education={education}
-                addExperience={addExperience}
-                updateExperience={updateExperience}
-                removeExperience={removeExperience}
-                addEducation={addEducation}
-                updateEducation={updateEducation}
-                removeEducation={removeEducation}
-              />
-            )}
+                {active === "experience" && (
+                  <ExperienceSection
+                    experience={experience}
+                    education={education}
+                    addExperience={addExperience}
+                    updateExperience={updateExperience}
+                    removeExperience={removeExperience}
+                    addEducation={addEducation}
+                    updateEducation={updateEducation}
+                    removeEducation={removeEducation}
+                  />
+                )}
 
-            {active === "teams" && (
-              <TeamsSection
-                tags={tags}
-                tagDraft={tagDraft}
-                setTagDraft={setTagDraft}
-                addTag={addTag}
-                removeTag={removeTag}
-              />
-            )}
+                {active === "teams" && (
+                  <TeamsSection
+                    tags={tags}
+                    tagDraft={tagDraft}
+                    setTagDraft={setTagDraft}
+                    addTag={addTag}
+                    removeTag={removeTag}
+                  />
+                )}
 
-            {active === "web" && (
-              <OnTheWebSection
-                email={email}
-                phone={phone}
-                website={website}
-                setEmail={setEmail}
-                setPhone={setPhone}
-                setWebsite={setWebsite}
-              />
-            )}
+                {active === "web" && (
+                  <OnTheWebSection
+                    email={email}
+                    phone={phone}
+                    website={website}
+                    setEmail={setEmail}
+                    setPhone={setPhone}
+                    setWebsite={setWebsite}
+                  />
+                )}
 
-            {active === "about" && (
-              <AboutMeSection bio={bio} setBio={setBio} />
-            )}
+                {active === "about" && (
+                  <AboutMeSection bio={bio} setBio={setBio} />
+                )}
 
-            {active === "links" && (
-              <LinksSection
-                links={links}
-                addLink={addLink}
-                updateLink={updateLink}
-                removeLink={removeLink}
-              />
-            )}
-          </div>
-        </form>
+                {active === "links" && (
+                  <LinksSection
+                    links={links}
+                    addLink={addLink}
+                    updateLink={updateLink}
+                    removeLink={removeLink}
+                  />
+                )}
+              </div>
+            </form>
+          </main>
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, LogOut, Settings, UserPen } from "lucide-react";
+import { ChevronDown, LogOut, Settings } from "lucide-react";
 import { Avatar } from "../ui/Avatar";
 import { Icon } from "../ui/Icon";
 import { NotificationPanel } from "./NotificationPanel";
@@ -94,14 +94,6 @@ export function Navbar({
         <div className="flex h-[70px] w-full items-center gap-20 px-30">
           {/* Logo */}
           <div className="flex w-[260px] items-center gap-[24px]">
-            {!hideMenu && (
-              <button
-                aria-label="Menu"
-                className="inline-flex h-[24px] w-[24px] items-center justify-center text-ink"
-              >
-                <Icon name="list" size={24} />
-              </button>
-            )}
             <button
               type="button"
               onClick={onNavigateHome}
@@ -131,7 +123,7 @@ export function Navbar({
               <button
                 aria-label="Messages"
                 onClick={onOpenMessages}
-                className="inline-flex h-[40px] w-[40px] items-center justify-center rounded-pill text-ink transition-all duration-150 hover:bg-purple-50 hover:text-purple-700 hover:scale-105 active:scale-95"
+                className="inline-flex h-[40px] w-[40px] items-center justify-center rounded-pill text-ink transition-all duration-150 hover:bg-canvas hover:text-ink hover:scale-105 active:scale-95"
               >
                 <Icon name="bellLarge" size={24} />
               </button>
@@ -150,8 +142,8 @@ export function Navbar({
                   setNotifHover(false);
                   onOpenNotifications?.();
                 }}
-                className={`inline-flex h-[40px] w-[40px] items-center justify-center rounded-pill text-ink transition-all duration-150 hover:bg-purple-50 hover:text-purple-700 hover:scale-105 active:scale-95 ${
-                  notifHover ? "bg-purple-50 text-purple-700" : ""
+                className={`inline-flex h-[40px] w-[40px] items-center justify-center rounded-pill text-ink transition-all duration-150 hover:bg-canvas hover:text-ink hover:scale-105 active:scale-95 ${
+                  notifHover ? "bg-canvas text-ink" : ""
                 }`}
               >
                 <Icon name="bell" size={24} />
@@ -232,23 +224,9 @@ export function Navbar({
                     </div>
                   </button>
 
-                  <div className="my-[4px] h-px bg-line" />
-
-                  <MenuItem
-                    icon={<UserPen className="h-[16px] w-[16px]" strokeWidth={1.8} />}
-                    onClick={() => {
-                      setProfileOpen(false);
-                      onOpenSelfProfile?.();
-                    }}
-                  >
-                    Edit Profile
-                  </MenuItem>
                   <MenuItem icon={<Settings className="h-[16px] w-[16px]" strokeWidth={1.8} />}>
                     Settings
                   </MenuItem>
-
-                  <div className="my-[4px] h-px bg-line" />
-
                   <MenuItem
                     icon={<LogOut className="h-[16px] w-[16px]" strokeWidth={1.8} />}
                     tone="danger"

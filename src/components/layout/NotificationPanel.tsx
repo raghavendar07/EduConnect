@@ -19,7 +19,7 @@ export function NotificationPanel({
       {/* Header */}
       <div className="flex items-center justify-between border-b border-line px-20 pt-20 pb-15">
         <h3 className="text-base font-semibold text-ink">Notifications</h3>
-        <button className="text-xs font-medium text-purple-700 hover:underline">
+        <button className="text-xs font-semibold text-green-700 transition-colors hover:text-green-600">
           Mark all as read
         </button>
       </div>
@@ -43,7 +43,7 @@ export function NotificationPanel({
                   <button className="rounded-pill border border-line bg-white px-15 py-[6px] text-xs font-medium text-ink hover:bg-canvas">
                     Deny
                   </button>
-                  <button className="rounded-pill bg-purple-700 px-15 py-[6px] text-xs font-medium text-white hover:opacity-90">
+                  <button className="rounded-pill bg-ink px-15 py-[6px] text-xs font-semibold text-white transition-colors hover:bg-black/85">
                     Approve
                   </button>
                 </div>
