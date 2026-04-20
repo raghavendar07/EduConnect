@@ -85,7 +85,7 @@ export default function App() {
             <div className="flex flex-col gap-20">
               {posts.map((p, i) => (
                 <Fragment key={i}>
-                  <PostCard post={p} onAuthorClick={openProfile} />
+                  <PostCard post={p} onAuthorClick={openProfile} showComments={i === 0} />
                   {i === 2 && (
                     <YouMightLike
                       posts={posts

@@ -29,9 +29,11 @@ export type Post = {
 export function PostCard({
   post,
   onAuthorClick,
+  showComments = false,
 }: {
   post: Post;
   onAuthorClick?: (authorId: string) => void;
+  showComments?: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
   const authorClickable = Boolean(post.author.id && onAuthorClick);
@@ -183,7 +185,7 @@ export function PostCard({
         </div>
       </footer>
 
-      <PostComments totalComments={post.stats.comments} />
+      {showComments && <PostComments totalComments={post.stats.comments} />}
     </article>
   );
 }

@@ -821,7 +821,7 @@ function WorkGrid({ profile, isSelf }: { profile: Profile; isSelf?: boolean }) {
   return (
     <div className="flex flex-col gap-20">
       {posts.map((p, i) => (
-        <V3FeedCard key={i} post={p} isSelf={isSelf} />
+        <V3FeedCard key={i} post={p} isSelf={isSelf} showComments={i === 0} />
       ))}
     </div>
   );
@@ -910,7 +910,15 @@ function SidebarTagRow({ tags }: { tags: string[] }) {
   );
 }
 
-function V3FeedCard({ post, isSelf }: { post: Post; isSelf?: boolean }) {
+function V3FeedCard({
+  post,
+  isSelf,
+  showComments = false,
+}: {
+  post: Post;
+  isSelf?: boolean;
+  showComments?: boolean;
+}) {
   const images = post.images ?? [];
   const cover = images[0];
   const [expanded, setExpanded] = useState(false);
@@ -1040,7 +1048,7 @@ function V3FeedCard({ post, isSelf }: { post: Post; isSelf?: boolean }) {
         </div>
       </footer>
 
-      <PostComments totalComments={post.stats.comments} />
+      {showComments && <PostComments totalComments={post.stats.comments} />}
     </article>
   );
 }
